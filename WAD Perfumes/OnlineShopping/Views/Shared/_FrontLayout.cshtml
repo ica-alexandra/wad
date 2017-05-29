@@ -1,0 +1,179 @@
+﻿@using OnlineShopping.Utility
+@using OnlineShopping.DAL
+@{
+    List<OnlineShopping.DAL.Tbl_Category> AllCategories = (List<OnlineShopping.DAL.Tbl_Category>)ViewBag.CategoryAndSubCategory;
+}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta charset="UTF-8">
+    @if (!string.IsNullOrEmpty(ViewBag.MetaKeywords))
+    {
+        <meta name="keywords" content="@ViewBag.MetaKeywords">
+    }
+    @if (!string.IsNullOrEmpty(ViewBag.MetaPhrase))
+    {
+        <meta name="phrase" content="@ViewBag.MetaPhrase">
+    }
+    @if (!string.IsNullOrEmpty(ViewBag.MetaDescription))
+    {
+        <meta name="description" content="@ViewBag.MetaDescription">
+    }
+    <!--css-->
+    <link rel="stylesheet" href="/CSS/stylesheet.css" media="all">
+    <link rel="stylesheet" href="/CSS/owl.carousel.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link href="~/CSS/CustomStyleSheet.css" rel="stylesheet" />
+    <link href="/CSS/sweetalert.css" rel="stylesheet" />
+    @RenderSection("CSS", false)
+    <script type="text/javascript" src="/Scripts/jquery.min.js"></script>
+    <!--css-->
+    <title> @ViewBag.MetaTitle </title>
+</head>
+
+<style>
+    .jumbotron{
+        background-color: #F8E0E6;
+        margin-bottom: 0px;
+    }
+
+</style>
+
+<body class="@((Request.Url.AbsolutePath.ToLower() != "/" && Request.Url.AbsolutePath.ToLower() != "/home" && Request.Url.AbsolutePath.ToLower() != "/home/index") ? "bgColor" : "")">
+   
+<!--Start main Container-->
+    <div class="mainCon">
+        <!--Start Header-->
+        <header class="clearfix">
+            <nav class="navbar navbar-inverse navbar-fixed-top" id="my-navbar">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                    </div>
+
+                    <div class="collapse navbar-collapse" id="navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="/home/index">Home</a></li>
+                            <!--<div class="closeBtn">X Close</div>-->
+                            @foreach (var cat in AllCategories.Where(i=>i.IsDelete.Value==false))
+                            {
+
+                            <li class="@(AllCategories.Where(i => i.CategoryId == cat.CategoryId).Count() > 0 ? " subcat" : "" )">
+                                <a href="/Search/index?searchKey=@cat.CategoryName">@cat.CategoryName</a>
+                                <ul class="subCategories" style="display:@(AllCategories.Where(i => i.CategoryId == cat.CategoryId).Count() > 0 ? " " : " none")">
+                                    <h1>All @cat.CategoryName</h1>
+                                    @foreach (var p in cat.Tbl_Product.ToList())
+                                    {
+                                    <li><a href="/Search/index?searchKey=@p.ProductName">@p.ProductName</a></li>
+                                    }
+                                </ul>
+                            </li>
+                            }
+                        </ul>
+
+
+                        <div class="menuBar">
+                            <div class="menuMobile">
+                                <ul>
+                                    @if (Session["MemberId"] != null)
+                                    {
+                                    <li>Hello @(Request.Cookies["MemberName"] != null && !string.IsNullOrEmpty(Request.Cookies["MemberName"].Value) ? Request.Cookies["MemberName"].Value : "User")!</li>
+                                    <li><a href="/shopping/mycart">Cart Items</a><span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span></li>
+                                    <li><a href="/account/logout">Logout</a><span class="glyphicon glyphicon-user" aria-hidden="true"></span></li>
+                                    }
+                                    else
+                                    {
+                                    <li><a href="javascript:void(0)" class="loginpopup">Login</a><span class="glyphicon glyphicon-user" aria-hidden="true"></span></li>
+                                    <li><a href="/account/register">Sign Up</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div> <!--End Container-->
+             </nav> <!--End navbar-->
+        </header>
+        
+        
+        </div>
+<div class="jumbotron">
+    <div class="container text-center">
+        </br>
+        <a href="/home/index"><img src="/Images/logo.png" alt="logo" /></a>
+        <p><i>No elegance is possible without perfume. It is the unseen, unforgettable, ultimate accessory.</i></p>
+        <p> Coco Chanel </p>
+    </div>
+
+</div><!-- end jumbotron --> 
+
+<div class="searchOnline clearfix">
+    <div class="container">
+        <div class="olContent fl"><h2>Search Product/Category</h2></div>
+        <div class="olSearch fr">
+            @using (Html.BeginForm("Index", "Search", FormMethod.Post))
+            {
+            <div>
+                <input type="text" placeholder="Enter Keywords" onkeypress="return onlynumericOrCharacter();" name="searchKey" class="inputComn houseText">
+            </div>
+            <div class="searchIcon">
+                <button type="button" class="searchBtn" onclick="$(this).parent().parent().submit();">
+                    <img src="/images/searchIcon.png" alt="img">
+                </button>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+        <!--End Header-->
+        @RenderBody()
+
+
+        <!--Login Popup/Modal-->
+        <div class="backBg" id="loginpopup">
+            @{Html.RenderPartial("_Login", new OnlineShopping.Models.LoginViewModel() { UserEmailId = (Request.Cookies["RememberMe_UserEmailId"] != null ? Request.Cookies["RememberMe_UserEmailId"].Value : ""), Password = (Request.Cookies["RememberMe_Password"] != null ? Request.Cookies["RememberMe_Password"].Value : ""), RememberMe = string.IsNullOrEmpty((Request.Cookies["RememberMe_UserEmailId"] != null ? Request.Cookies["RememberMe_UserEmailId"].Value : "")) ? false : true });}
+        </div>
+        <!--End Popup/Modal-->
+    </div>
+
+
+     <footer>
+        <hr>
+        <div class="container text-center">
+
+            <ul class="list-inline">
+                <li><a href="home/contact">Contact</a></li>
+                <li><a href="">Shipping Options</a></li>
+            </ul>
+
+            <p>&copy; Copyright 2017</p>
+
+        </div><!-- end Container-->
+    </footer>
+
+
+    <!--script-->
+
+    <script src="/Scripts/owl.carousel.min.js"></script>
+    <script type="text/javascript" src="/Scripts/function.js"></script>
+    <script src="~/Scripts/CustomFunction.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+    <script src="~/Scripts/sweetalert-dev.js"></script>
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script src="~/Scripts/datepicker.js"></script>
+    @RenderSection("Scripts", false)
+</body>
+</html>

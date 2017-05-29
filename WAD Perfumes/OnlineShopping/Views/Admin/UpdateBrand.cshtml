@@ -1,0 +1,58 @@
+﻿@model OnlineShopping.Models.BrandDetail
+@{
+    ViewBag.Title = "BrandDetail";
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<div class="rightpart">
+    <div class="sechBx clearfix">
+        <div class="bretcrum"><a href="#">Dashboard</a>&nbsp; » <span>Form</span></div>
+    </div>
+    <div class="dashBx">
+        @using (Html.BeginForm("UpdateBrand", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="dashboardHD">
+                @(Request.Url.ToString().ToLower().Contains("addbrand") ? "Add Brand" : "Update Brand")
+            </div>
+            <div class="dashformBx  dashformBx2 clearfix">
+                @Html.HiddenFor(m => m.BrandId)
+                <div class="dashfrm-L">
+                    <label class="lblTxt">Brand Name*</label>
+                    @Html.TextBoxFor(m => m.BrandName, new { @class = "dashInp", @onkeypress = "return OnlyLegalCharacters();" })
+                    @Html.ValidationMessageFor(m => m.BrandName)
+                </div>
+            </div>
+
+
+
+                <div class="Edit-Img">
+                    <label class="lblTxt">Banner Image</label>
+                    @if (Model.BrandImage != null && Model.BrandImage != "")
+                    {
+                       <img src="@(Path.Combine(System.Configuration.ConfigurationManager.AppSettings["ProductImage"], "Medium/", Model.BrandId + "_" + Model.BrandImage))" alt="" id="ImgProfServiceBanner" />
+                        <p>poza</p>
+                        @Html.HiddenFor(m => m.BrandImage)
+                    }
+                    else
+                    {
+                        <img src="/images/No Photo.png" alt="" id="ImgProfServiceBanner" />
+                    }
+                    <div class="edit-icon">
+                        <input type="file" id="ProfServiceBannerImg" name="_BrandImage" style="height:1px; width:1px;display:none;" onchange="readImageURL(this, '#ImgProfServiceBanner')" />
+                        <a href="javascript:void(0)" onclick="$('#ProfServiceBannerImg').click();"><img src="/images/edit-icon2.png" alt=""></a>
+                    </div>
+                    @Html.ValidationMessageFor(m => m.BrandImage)
+                </div>
+
+                <div class="clearfix"></div>
+                <div class="dashfrm-L submitBtns">
+                    <a onclick="window.history.back();" class="editBtn cancelBtn" style="width: 48%;">Cancel</a>
+                    <input type="submit" value="Submit" onclick="return CheckValidInput(this);" class="editBtn" style="width: 48%;" />
+
+                </div>
+            
+        }
+    </div>
+</div>
+
